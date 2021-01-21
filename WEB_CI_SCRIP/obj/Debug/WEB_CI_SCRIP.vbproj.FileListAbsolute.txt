@@ -84,3 +84,6 @@ C:\Users\User\source\repos\WEB_CI_SCRIP\WEB_CI_SCRIP\bin\Microsoft.IO.Recyclable
 C:\Users\User\source\repos\WEB_CI_SCRIP\WEB_CI_SCRIP\bin\DocumentFormat.OpenXml.xml
 C:\Users\User\source\repos\WEB_CI_SCRIP\WEB_CI_SCRIP\bin\EPPlus.xml
 C:\Users\User\source\repos\WEB_CI_SCRIP\WEB_CI_SCRIP\bin\System.IO.Packaging.xml
+C:\Users\User\source\repos\WEB_CI_SCRIP\WEB_CI_SCRIP\bin\DotNetZip.dll
+C:\Users\User\source\repos\WEB_CI_SCRIP\WEB_CI_SCRIP\bin\DotNetZip.pdb
+C:\Users\User\source\repos\WEB_CI_SCRIP\WEB_CI_SCRIP\bin\DotNetZip.xml
