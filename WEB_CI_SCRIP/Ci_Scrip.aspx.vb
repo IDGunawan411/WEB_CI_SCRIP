@@ -7,6 +7,7 @@ Imports OfficeOpenXml.Style
 Imports Ionic.Zip
 Imports System.IO.Compression
 Imports System.Net.Mail
+Imports DocumentFormat.OpenXml.Office2010.ExcelAc
 
 Public Class Ci_Scrip
     Inherits System.Web.UI.Page
@@ -219,7 +220,6 @@ Public Class Ci_Scrip
                 No = No + 1
                 Row_Data = Row_Data + 1
             Next
-
             Model_Table = Workshet_Perbandingan.Cells(Moodel_Range)
             Model_Table.style.border.top.style = ExcelBorderStyle.Thin
             Model_Table.style.border.left.style = ExcelBorderStyle.Thin
@@ -280,7 +280,17 @@ Public Class Ci_Scrip
         End Try
 
         'CREATE FILE ZIP===============================================================================================
-        Dim Zip_Password = "123"
+        Dim Random_Word As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+
+        Dim String_Builder As New StringBuilder()
+        Dim Random As New Random()
+        For i As Integer = 1 To 4
+            Dim Idx As Integer = Random.Next(0, Random_Word.Length)
+            Dim Random_String As Char = Random_Word(Idx)
+            String_Builder.Append(Random_String)
+        Next i
+        Dim Unique_Pass = String_Builder.ToString()
+        Dim Zip_Password = "DAC-" & Unique_Pass
         Try
             'Upload Txt
             Dim Zip_Name_Txt = "LAPORAN_PERBANDINGAN_" & DateTime.Now.ToString("dd-MM-yyyy") & "_Tab.txt"
@@ -289,16 +299,18 @@ Public Class Ci_Scrip
             Dim Zip_Name_Exel = "LAPORAN_PERBANDINGAN_" & DateTime.Now.ToString("dd-MM-yyyy") & "_Exel.xlsx"
             Dim Zip_Path_Exel As String = "D:\GIT3\Download\" & Zip_Name_Exel
 
-            'Dim Zip_File = "LAPORAN_PERBANDINGAN_" & DateTime.Now.ToString("ddMMyyyyHHmm") & ""
-            'Dim Zip_Name As String = [String].Format("" & Zip_File & ".rar")
-            'Response.ContentType = "application/7za"
-            'Response.AddHeader("content-disposition", "attachment; filename=" + Zip_Name)
+            Dim Zip_File = "LAPORAN_PERBANDINGAN_" & DateTime.Now.ToString("ddMMyyyyHHmm") & ""
+            Dim Zip_Name As String = [String].Format("" & Zip_File & ".rar")
+            Response.ContentType = "application/7za"
+            Response.AddHeader("content-disposition", "attachment; filename=" + Zip_Name)
             Dim Ex_Zip As New Ionic.Zip.ZipFile()
             Ex_Zip.Password = Zip_Password
-            Ex_Zip.AddFile(Zip_Path_Txt)
-            Ex_Zip.AddFile(Zip_Path_Exel)
-            Ex_Zip.Save("D:\GIT3\Download\LAPORAN_PERBANDINGAN_" & DateTime.Now.ToString("ddMMyyyyHHmm") & ".rar")
-
+            Ex_Zip.AddFile(Zip_Path_Txt, "")
+            Ex_Zip.AddFile(Zip_Path_Exel, "")
+            'Ex_Zip.Save("C:\Download\LAPORAN_PERBANDINGAN_" & DateTime.Now.ToString("ddMMyyyyHHmm") & ".rar")
+            Ex_Zip.Save(Response.OutputStream)
+            My.Computer.FileSystem.DeleteFile(Zip_Path_Txt)
+            My.Computer.FileSystem.DeleteFile(Zip_Path_Exel)
         Catch ex As Exception
             Label_Catch.Visible = True
             Label_Catch.Text = ex.Message
@@ -322,7 +334,7 @@ Public Class Ci_Scrip
             Label_Catch.Text = ex.Message
         End Try
 
-        'SEND EMAIL================================================================================================
+        'SEND EMAIL=====================================================================================================
         Try
             Dim Send_Email As Object
             Send_Email = CreateObject("CDO.Message")
@@ -341,17 +353,16 @@ Public Class Ci_Scrip
             Send_Email.Subject = "Scrip Scrippless Notifikasi"
             Send_Email.AddAttachment(Zip_Path_Pass)
             Send_Email.HTMLBody = "<div>" &
-                                "<p>Kepada <b>Unit Penelitian</b>,</p>" &
-                                "<div>" &
-                                    "<span> Terakait eksekusi procedure untuk data perbandingan script dan scriptless dinyatakan </span>" &
-                                    "<b>BERHASIL</b><span>" &
-                                    "<span> Dengan Password zip : " & Zip_Password & " </span>" &
-                                "</div><br>" &
-                                "<div>" &
-                                    "<span>Demikian informasi disampaikan,</span><br>" &
-                                    "<span>Terima Kasih.</span>" &
-                                "</div>" &
-                            "</div>"
+                                        "<p>Kepada <b>Unit Penelitian</b>,</p>" &
+                                        "<div>" &
+                                            "<span> Terakait eksekusi procedure untuk data perbandingan script dan scriptless dinyatakan </span>" &
+                                            "<b>BERHASIL</b><span>" &
+                                        "</div><br>" &
+                                        "<div>" &
+                                            "<span>Demikian informasi disampaikan,</span><br>" &
+                                            "<span>Terima Kasih.</span>" &
+                                        "</div>" &
+                                  "</div>"
             Send_Email.Send
         Catch ex As Exception
             Label_Catch.Visible = True
